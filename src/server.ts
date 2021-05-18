@@ -33,4 +33,10 @@ app.dbConnection();
 
 app.app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
 
+app.app.get( "/", ( req: any, res: any ) => {
+
+    res.send( "Alsiraj web site is up and running" );
+} );
+
+
 
