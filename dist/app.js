@@ -3,9 +3,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const constant_enum_1 = require("./config/constant.enum");
 const express = require("express");
 const mongodb = require("mongoose");
+const multer = require("multer");
+const cors = require("cors");
+const upload = multer({ dest: `upload/` });
 class App {
     constructor(appInit) {
         this.app = express();
+        this.app.use(cors());
+        this.app.use(upload.any());
         this.port = appInit.port;
         this.middlewares(appInit.middleWares);
         this.routes(appInit.controllers);
@@ -36,7 +41,7 @@ class App {
     }
     dbConnection() {
         // Connecting to the database
-        mongodb.connect(constant_enum_1.DBConnection.dbConnection, { useNewUrlParser: true, useUnifiedTopology: true }).then(() => {
+        mongodb.connect(constant_enum_1.DBConnection.dbConnection, { useNewUrlParser: true, useUnifiedTopology: true, }).then(() => {
             console.log("Successfully connected to the database !!");
             this.listening();
         }).catch((err) => {

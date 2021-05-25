@@ -10,6 +10,7 @@ class AuthRoute  {
         this.router.post('/masters/any/users/add', this._signup);
         this.router.post('/auth/signin', this._signIn);
         this.router.post('/auth/getAuthToken', this._getAuthToken);
+        this.router.post('/auth/upload', this._upload);
         this.authService = new AuthService();
 
     }
@@ -18,10 +19,10 @@ class AuthRoute  {
 
         try {
             const {userName, firstName, lastName, password, emailId, phoneNumber,
-                 appUser, userType, documentUrl}= req.body
+                 appUser, userType, documentUrl, socialAuth}= req.body
 
             const result = await this.authService.signUp({userName, firstName, lastName, 
-                password, emailId, phoneNumber, appUser, userType, documentUrl});   
+                password, emailId, phoneNumber, appUser, userType, documentUrl, socialAuth});   
 
 
             if(!result && result === undefined){
@@ -34,7 +35,7 @@ class AuthRoute  {
             console.log("Error occured in _signup",err);
 
                 res.status(400).json({
-                    message: err
+                    message: err.toString()
                 });  
            
         }
@@ -88,6 +89,25 @@ class AuthRoute  {
             });  
         }
     }
+
+    private  _upload = async (req, res: express.Response) => {
+
+        try {
+            
+            const result = await this.authService.uploadFileToS3(req);
+            
+            res.json({ data :  result });  
+        } catch (err) {
+ 
+            console.log("Error occured in _upload",err);
+
+                res.status(400).json({
+                    message: err
+                });  
+           
+        }
+       
+    } 
 }
 
 export default AuthRoute

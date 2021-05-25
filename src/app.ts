@@ -1,13 +1,20 @@
 import { DBConnection } from './config/constant.enum'
 import * as express from 'express'
 import * as mongodb from 'mongoose'
+import * as multer from 'multer'
+import * as cors from 'cors'
 
+
+
+const upload = multer({ dest: `upload/` })
 class App {
     public app: express.Application
     public port: number
 
     constructor(appInit: { port: number; middleWares: any; controllers: any;}) {
         this.app = express()
+        this.app.use(cors())
+        this.app.use(upload.any())
         this.port = appInit.port
         this.middlewares(appInit.middleWares)
         this.routes(appInit.controllers)
@@ -46,7 +53,7 @@ class App {
 
     public dbConnection(){
         // Connecting to the database
-        mongodb.connect(DBConnection.dbConnection, {useNewUrlParser: true, useUnifiedTopology: true}).then(() => {
+        mongodb.connect(DBConnection.dbConnection, {useNewUrlParser: true, useUnifiedTopology: true, }).then(() => {
         console.log("Successfully connected to the database !!");
         this.listening();
         }).catch((err: any) => {
@@ -55,6 +62,9 @@ class App {
         });
 
     }
+
+   
 }
 
 export default App
+

@@ -16,9 +16,9 @@ class AuthRoute {
         this.router = express.Router();
         this._signup = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
-                const { userName, firstName, lastName, password, emailId, phoneNumber, appUser, userType, documentUrl } = req.body;
+                const { userName, firstName, lastName, password, emailId, phoneNumber, appUser, userType, documentUrl, socialAuth } = req.body;
                 const result = yield this.authService.signUp({ userName, firstName, lastName,
-                    password, emailId, phoneNumber, appUser, userType, documentUrl });
+                    password, emailId, phoneNumber, appUser, userType, documentUrl, socialAuth });
                 if (!result && result === undefined) {
                     throw new Error('unable to save');
                 }
@@ -27,7 +27,7 @@ class AuthRoute {
             catch (err) {
                 console.log("Error occured in _signup", err);
                 res.status(400).json({
-                    message: err
+                    message: err.toString()
                 });
             }
         });
@@ -64,9 +64,22 @@ class AuthRoute {
                 });
             }
         });
+        this._upload = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const result = yield this.authService.uploadFileToS3(req);
+                res.json({ data: result });
+            }
+            catch (err) {
+                console.log("Error occured in _upload", err);
+                res.status(400).json({
+                    message: err
+                });
+            }
+        });
         this.router.post('/masters/any/users/add', this._signup);
         this.router.post('/auth/signin', this._signIn);
         this.router.post('/auth/getAuthToken', this._getAuthToken);
+        this.router.post('/auth/upload', this._upload);
         this.authService = new auth_service_1.default();
     }
 }

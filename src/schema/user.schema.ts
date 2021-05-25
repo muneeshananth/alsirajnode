@@ -1,4 +1,6 @@
 import mongoose = require("mongoose");
+import * as bcrypt from 'bcrypt'
+import { IUserInformation } from "../interfaces/IUser.interface";
 
  const  Users = new mongoose.Schema({
     userName: {
@@ -11,28 +13,33 @@ import mongoose = require("mongoose");
     },
     lastName: {
         type: String,
-        required: true
+        required: false
     },
     password: {
         type: String,
-        required: true
+        required: false
     },
     emailId: {
         type: String,
         required: true, 
-        unique : true
+        unique : true,
+        match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
     },
     phoneNumber: {
         type: String,
-        required: true
+        required: false
     },
     appUser: {
         type: String,
-        required: true
+        required: false
     },
     userType: {
         type: String,
-        required: true
+        required: false
+    },
+    socialAuth: {
+        type: Boolean,
+        required: false
     },
     documentUrl: {
         type: String,
@@ -40,4 +47,28 @@ import mongoose = require("mongoose");
     },
 })
 
-export const UserSchema = mongoose.model('sample', Users)
+Users.pre<IUserInformation>('save', async function(next){
+try {
+    
+    const salt = await bcrypt.genSalt(5);
+    const hashPassword = await bcrypt.hash(this.password, salt);
+
+    console.log('pasword', hashPassword)
+
+    this.password = hashPassword;
+
+
+} catch (error) {
+    next(error)
+}
+})
+
+Users.methods.isValidPassword= async function (password, hashPassword) {
+    try {
+      return await bcrypt.compare(password, hashPassword)
+    } catch (error) {
+      throw error
+    }
+  }
+
+export const UserSchema = mongoose.model<IUserInformation & mongoose.Document>('sample', Users)

@@ -69,6 +69,31 @@ class Service {
             }
         });
     }
+    getUsers() {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                return yield user_schema_1.UserSchema.find({ 'userType': 'Public' }).exec();
+            }
+            catch (error) {
+                console.log('error while getting user list from db ', error);
+                throw error;
+            }
+        });
+    }
+    getAdmins(user) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                if (user.userType === 'admin') {
+                    return yield user_schema_1.UserSchema.find({ 'userType': 'admin' }).exec();
+                }
+                throw new Error('Only admin can view the admin list, You are not allowed');
+            }
+            catch (error) {
+                console.log('error while getting user list from db ', error);
+                throw error;
+            }
+        });
+    }
     generateAccessToken(user) {
         return __awaiter(this, void 0, void 0, function* () {
             return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30m' });
@@ -77,24 +102,6 @@ class Service {
     generateRefreshToken(user) {
         return __awaiter(this, void 0, void 0, function* () {
             return jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '30m' });
-        });
-    }
-    getUsers() {
-        return __awaiter(this, void 0, void 0, function* () {
-            return [
-                {
-                    id: 1,
-                    name: "Rakesh",
-                },
-                {
-                    id: 2,
-                    name: "Venkat",
-                },
-                {
-                    id: 3,
-                    name: "Asharaf",
-                },
-            ];
         });
     }
 }

@@ -16,13 +16,36 @@ class HomeRoute {
     constructor() {
         this.router = express.Router();
         this.getUsers = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
-            const result = yield this.service.getUsers();
-            console.log(result);
-            res.send(result);
+            try {
+                const result = yield this.service.getUsers();
+                res.json(result);
+            }
+            catch (err) {
+                console.log("Error occured in getting user list", err);
+                res.status(400).json({
+                    message: err.toString()
+                });
+            }
         });
-        this.router.get('/test', authentication_1.default, this.getUsers);
+        this.getAdmins = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const result = yield this.service.getAdmins(req.user);
+                res.json(result);
+            }
+            catch (err) {
+                console.log("Error occured in getting admin list", err);
+                res.status(400).json({
+                    message: err.toString()
+                });
+            }
+        });
+        this.router.get('/masters/any/users/list', authentication_1.default, this.getUsers);
+        this.router.get('/masters/any/admin/list', authentication_1.default, this.getAdmins);
         this.service = new service_1.default();
     }
 }
 exports.default = HomeRoute;
+function Router() {
+    throw new Error('Function not implemented.');
+}
 //# sourceMappingURL=home.route.js.map
