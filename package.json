@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "env-cmd -f ./.env nodemon src/server.ts",
-    "start": "env-cmd -f ./.env nodemon dist/server.js",
+    "start": "node dist/server.js",
     "build": "env-cmd -f ./.env tsc"
   },
   "author": "",
