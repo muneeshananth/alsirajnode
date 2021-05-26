@@ -11,7 +11,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const user_schema_1 = require("../schema/user.schema");
 const jwt = require("jsonwebtoken");
+const send_mail_1 = require("./send.mail");
 class Service {
+    constructor() {
+        this.mailService = new send_mail_1.default();
+    }
     /* function to create new User */
     signUp(userInformation) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -76,6 +80,22 @@ class Service {
             }
             catch (error) {
                 console.log('error while getting user list from db ', error);
+                throw error;
+            }
+        });
+    }
+    sendMail(emailInfo) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const mailOption = {
+                    to: emailInfo.emailId,
+                    subject: emailInfo.subject,
+                    text: emailInfo.emailBody
+                };
+                return yield this.mailService.sendMail(mailOption);
+            }
+            catch (error) {
+                console.log('error while sendMail ', error);
                 throw error;
             }
         });
