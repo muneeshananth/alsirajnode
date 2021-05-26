@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "env-cmd -f ./.env nodemon src/server.ts",
     "start": "node dist/server.js",
-    "build": "env-cmd -f ./.env tsc"
+    "build": "env-cmd -f ./.env tsc",
+    "heroku-postbuild": "tsc"
   },
   "author": "",
   "license": "ISC",
