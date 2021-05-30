@@ -13,6 +13,7 @@ class HomeRoute  {
         this.router.get('/masters/any/users/list', authenticateToken, this.getUsers);
         this.router.get('/masters/any/admin/list', authenticateToken, this.getAdmins);
         this.router.post('/masters/any/email/add', authenticateToken, this._sendMail)
+        this.router.get('/buy', this._buy)
         this.service = new Service();
 
     }
@@ -63,6 +64,24 @@ class HomeRoute  {
             res.json(response);   
         } catch (err) {
              console.log("Error occured in getting admin list",err);
+
+                res.status(400).json({
+                    message: err.toString()
+                }); 
+        }
+
+    }
+
+    private  _buy = async (req: IRequestExtended, res: express.Response, next) => {
+
+        try {
+           const resp = await this.service.subscriptions(req, res);
+
+        
+          
+     return resp
+        } catch (err) {
+             console.log("Error occured in _buy",err);
 
                 res.status(400).json({
                     message: err.toString()
