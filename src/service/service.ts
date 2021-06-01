@@ -132,8 +132,8 @@ class Service {
           "payment_method": "paypal"
       },
       "redirect_urls": {
-          "return_url": "https://alsiraj-node.herokuapp.com/success",
-          "cancel_url": "https://alsiraj-node.herokuapp.com/cancel"
+          "return_url": "http://localhost:8000/success",
+          "cancel_url": "http://localhost:8000/cancel"
       },
       "transactions": [{
           "item_list": {

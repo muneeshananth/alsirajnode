@@ -4,6 +4,7 @@ import loggerMiddleware from './middleware/logger'
 import * as express from 'express'
 import * as YAML from 'yamljs';
 
+
 import * as swaggerUi from 'swagger-ui-express';
 var cors = require('cors')
 import HomeRoute from './routes/home/home.route'
@@ -40,8 +41,8 @@ const app = new App({
     // configure paypal with the credentials you got when you created your paypal app
     paypal.configure({
         'mode': 'sandbox', //sandbox or live 
-        'client_id': 'AYsgr-D5cjaFn3nFFut2XL5YhCuqFh0M52TEdYtGdJrNaSzKJaNOlNtrdVXq1x9JN96goLO1e891yg50', // please provide your client id here 
-        'client_secret': 'EL6QnWqfUAKJ18DX_pHB6Zk4w2hw6RX3fppvbMEfhnfqK8I0rQktsvQddrarPM285_RikMOcFUTZn0Q2' // provide your client secret here 
+        'client_id': 'AfJeTfrVBHkVfvFgjRmpv8z2-jDeQprZ6DMMAXdgLXsn_BIS3rlW6VOEqhfa79bY-gYziHCyLSidP3ar', // please provide your client id here 
+        'client_secret': 'EK-QBsOc0nPguci13VC5md7gUwu9FBbyOVIXmthtcASzKWRsuZY7LP3jIppeooxafyZbkulZayDQZxDX' // provide your client secret here 
       });
 
 
@@ -57,8 +58,25 @@ app.app.get('/' , (req , res) => {
 })
 
 app.app.get('/success' , (req ,res ) => {
-    console.log(req.query); 
-    res.sendFile(__dirname +'/success.html'); 
+    console.log('quewry', req.query); 
+
+    var paymentId = req.query.paymentId.toString();
+    var payerId = { 'payer_id': req.query.PayerID.toString() };
+    paypal.payment.execute(paymentId, payerId, function(error, payment){
+        if(error){
+            console.error(error);
+        } else {
+            if (payment.state == 'approved'){ 
+
+                console.log('all sucess')
+
+                res.sendFile(__dirname +'/success.html'); 
+            } else {
+                res.send('payment not successful');
+            }
+        }
+    });
+    
 })
 
 // error page 
