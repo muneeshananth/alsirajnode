@@ -2,6 +2,7 @@ import { UserSchema } from "../schema/user.schema";
 import * as jwt from "jsonwebtoken";
 import { IEmailInfo, ILoginInfo, IUserInformation } from "../interfaces/IUser.interface";
 import EmailService from "./send.mail";
+import * as paypal from "paypal-rest-sdk"
 class Service {
 
   private mailService : EmailService;
@@ -120,12 +121,82 @@ class Service {
       }   
     }
 
+  public async subscriptions (req: any, res: any) {
+
+
+
+
+    const create_payment_json = {
+      "intent": "sale",
+      "payer": {
+          "payment_method": "paypal"
+      },
+      "redirect_urls": {
+          "return_url": "http://localhost:8000/success",
+          "cancel_url": "http://localhost:8000/cancel"
+      },
+      "transactions": [{
+          "item_list": {
+              "items": [{
+                  "name": "Alsiraj membership",
+                  "sku": "001",
+                  "price": "5.00",
+                  "currency": "USD",
+                  "quantity": 1
+              }]
+          },
+          "amount": {
+              "currency": "USD",
+              "total": "5.00"
+          },
+          "description": "Hat for the best team ever"
+      }]
+  };
+  
+
+      console.log( 'payment', create_payment_json ); 
+
+      // call the create Pay method 
+      await this.createPayment( create_payment_json ) 
+        .then( ( transaction ) => {
+
+          console.log( 'transaction', transaction ); 
+            var id = transaction['id']; 
+            var links = transaction['links'];
+            var counter = links.length; 
+            while( counter -- ) {
+              if ( links[counter].method == 'REDIRECT') {
+                // redirect to paypal where user approves the transaction 
+                          return res.redirect( links[counter].href )
+                      }
+            }
+        })
+        .catch( ( err ) => { 
+            console.log( err ); 
+            res.redirect('/err');
+        });
+
+  }
+
   private async generateAccessToken(user) {
     return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30m' })
   }
 
   private async generateRefreshToken(user) {
     return jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '30m' })
+  }
+
+  private async createPayment(payment: any){
+    return new Promise( ( resolve , reject ) => {
+      paypal.payment.create( payment , function( err , payment ) {
+       if ( err ) {
+           reject(err); 
+       }
+      else {
+          resolve(payment); 
+      }
+      }); 
+  });
   }
 
 }
